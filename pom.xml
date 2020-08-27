@@ -5,13 +5,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.0.RELEASE</version>
+        <version>2.2.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.ll.elasticsearch</groupId>
-    <artifactId>ll</artifactId>
+    <groupId>com.ll</groupId>
+    <artifactId>ll-elasticsearch</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>elasticsearch</name>
+    <packaging>war</packaging>
+    <name>ll-elasticsearch</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
