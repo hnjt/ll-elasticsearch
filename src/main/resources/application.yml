@@ -1,0 +1,5 @@
+server:
+  port: 9100
+
+security-fig:
+  swagger-url:  /doc
