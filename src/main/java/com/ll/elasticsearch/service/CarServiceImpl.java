@@ -85,86 +85,6 @@ public class CarServiceImpl implements CarService{
         return cars;
     }
 
-    ///**
-    //     * 检索聚合查询，这里对taxonomy(学科分类进行聚合)
-    //     * @param params
-    //     * @return
-    //     */
-    //    @Override
-    //    public SdbResult searchQuery(String q, String dataSetType, String taxonomy, String code, String username, boolean ordertime, boolean orderinfluence, String page, String size, Locale locale) {
-    //
-    //        Map<String, Object> map = Maps.newHashMap();
-    //        Pageable pageable = PageRequest.of(Integer.parseInt(page), Integer.parseInt(size));
-    //        //检索条件
-    //        BoolQueryBuilder bqb = QueryBuilders.boolQuery();
-    //        if(StringUtils.isNotEmpty(dataSetType))
-    //            bqb.must(QueryBuilders.matchPhraseQuery("dataSetType", dataSetType));
-    //        if(StringUtils.isNotEmpty(code))
-    //            bqb.must(QueryBuilders.matchPhraseQuery("code", code));
-    //        if(StringUtils.isNotEmpty(taxonomy))
-    //            bqb.must(QueryBuilders.matchPhraseQuery("taxonomy", taxonomy));
-    //        if(StringUtils.isNotEmpty(q))
-    //            bqb.must(QueryBuilders.multiMatchQuery(q, "title", "keyword", "introduction"));
-    //        //排序条件
-    //        FieldSortBuilder fsb = null;
-    //        if(ordertime){
-    //            fsb = SortBuilders.fieldSort("publishDate").order(SortOrder.DESC);
-    //        }
-    //        if(orderinfluence){
-    //            fsb = SortBuilders.fieldSort("referenceNumber").order(SortOrder.DESC);
-    //        }
-    //		//聚合条件
-    //        TermsAggregationBuilder builder1 = AggregationBuilders.terms("taxonomy").field("taxonomy.keyword");
-    //        TermsAggregationBuilder builder2 = AggregationBuilders.terms("year").field("year.keyword");
-    //        TermsAggregationBuilder builder = builder1.subAggregation(builder2);
-    //        //构建查询
-    //        SearchQuery query = new NativeSearchQueryBuilder()
-    //                .withQuery(bqb)
-    //                .withSort(fsb)
-    //                .addAggregation(builder)
-    //                .withPageable(pageable)
-    //                .build();
-    //        if ("en".equals(locale.getLanguage())) {
-    //            AggregatedPage<DataSetIndexEn> search = (AggregatedPage)sdoIndexEnRepository.search(query);
-    //            long totalElements = search.getTotalElements();
-    //            int totalPages = search.getTotalPages();
-    //            List<DataSetIndexEn> content = search.getContent();
-    //			Terms term1 = (Terms)search.getAggregations().getAsMap().get("taxonomy");
-    //            log.debug("term1============"+term1.toString());
-    //            for (Terms.Bucket bucket : term1.getBuckets()) {
-    //                log.debug("一级内容"+bucket.toString());
-    //                map.put(bucket.getKey().toString(), bucket.getDocCount());
-    //                Terms terms_year = bucket.getAggregations().get("year");
-    //                for (Terms.Bucket year_bucket : terms_year.getBuckets()) {
-    //                    log.debug("二级内容"+year_bucket.toString());
-    //                    map.put(year_bucket.getKey().toString(), year_bucket.getDocCount());
-    //                }
-    //            }
-    //            map.put("total",totalElements);
-    //            map.put("totalPages",totalPages);
-    //            map.put("recommendData",content);
-    //        } else {
-    //            AggregatedPage<DataSetIndexZh> search = (AggregatedPage)sdoIndexZhRepository.search(query);
-    //            long totalElements = search.getTotalElements();
-    //            int totalPages = search.getTotalPages();
-    //            List<DataSetIndexZh> content = search.getContent();
-    //			Terms term1 = (Terms)search.getAggregations().getAsMap().get("taxonomy");
-    //            log.debug("term1============"+term1.toString());
-    //            for (Terms.Bucket bucket : term1.getBuckets()) {
-    //                log.debug("一级内容"+bucket.toString());
-    //                map.put(bucket.getKey().toString(), bucket.getDocCount());
-    //                Terms terms_year = bucket.getAggregations().get("year");
-    //                for (Terms.Bucket year_bucket : terms_year.getBuckets()) {
-    //                    log.debug("二级内容"+year_bucket.toString());
-    //                    map.put(year_bucket.getKey().toString(), year_bucket.getDocCount());
-    //                }
-    //            }
-    //            map.put("total",totalElements);
-    //            map.put("totalPages",totalPages);
-    //            map.put("recommendData",content);
-    //        }
-    //        return success(map);
-    //    }
 
     @Override
     public List<Car> searchQuery(Car car,Integer page,Integer size) {
@@ -174,23 +94,23 @@ public class CarServiceImpl implements CarService{
         //检索条件
         BoolQueryBuilder bqb = QueryBuilders.boolQuery();
         if(StringUtils.isNotBlank(car.getName()))
-            bqb.must(QueryBuilders.matchPhraseQuery("name",car.getName()));
+            bqb.must(QueryBuilders.matchPhraseQuery("name",car.getName()));//模糊匹配
         //排序处理
-        FieldSortBuilder fsb = null;
-//        Pageable pageable = PageRequest.of(1, 8, Sort.Direction.DESC, "publishDate");
-        fsb = SortBuilders.fieldSort("date").order( SortOrder.DESC);
+        FieldSortBuilder fsb = SortBuilders.fieldSort("date").order( SortOrder.DESC);//日期倒序
         //聚合
-//        TermsAggregationBuilder builder1 = AggregationBuilders.terms("age").field("taxonomy.keyword");
-//        TermsAggregationBuilder builder2 = AggregationBuilders.terms("year").field("year.keyword");
-//        TermsAggregationBuilder builder = builder1.subAggregation(builder2);
+        TermsAggregationBuilder tab = AggregationBuilders.terms("age").field("age");//年龄聚合
         //查询构建
         SearchQuery query = new NativeSearchQueryBuilder()
                 .withQuery(bqb)
                 .withSort(fsb)
-//                .addAggregation(builder1)
+                .addAggregation(tab)
                 .withPageable(pageable)
                 .build();
         AggregatedPage<Car> search = (AggregatedPage)repository.search(query);
+        long totalElements = search.getTotalElements();
+        int totalPages = search.getTotalPages();
+        System.out.println(totalElements);
+        System.out.println(totalPages);
         List<Car> content = search.getContent();
         return content;
     }
