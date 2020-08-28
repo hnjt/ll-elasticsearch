@@ -95,6 +95,13 @@ public class CarServiceImpl implements CarService{
         BoolQueryBuilder bqb = QueryBuilders.boolQuery();
         if(StringUtils.isNotBlank(car.getName()))
             bqb.must(QueryBuilders.matchPhraseQuery("name",car.getName()));//模糊匹配
+        
+        //filter 效率比 must高的多
+        //bqb.filter(QueryBuilders.termQuery("routerDatabaseNo", query.getRouterDatabaseNo()));
+
+        //时间段 一定要有头有尾 不然会出现慢查询
+        //bqb.filter(QueryBuilders.rangeQuery("createTime").from( query.getCreateTime()).to(query.getUpdateTime()));
+        
         //排序处理
         FieldSortBuilder fsb = SortBuilders.fieldSort("date").order( SortOrder.DESC);//日期倒序
         //聚合
