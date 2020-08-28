@@ -68,4 +68,20 @@ public class CarController {
         cars.addAll(all);
         return cars.toJSONString();
     }
+
+    @GetMapping("/searchQuery")
+    public String searchQuery(
+            @RequestParam (required = false) String name,
+            @RequestParam (required = false) Integer age,
+            @RequestParam (required = false) Integer page,
+            @RequestParam (required = false) Integer size
+    ){
+        Car car = new Car();
+        car.setName( name );
+        car.setAge( age );
+        List<Car> all = service.searchQuery(car,page,size);
+        JSONArray cars = new JSONArray();
+        cars.addAll(all);
+        return cars.toJSONString();
+    }
 }

@@ -17,4 +17,6 @@ public interface CarService {
     Car get (String id);
 
     List<Car> search (Car car);
+
+    List<Car> searchQuery (Car car,Integer page,Integer size);
 }
